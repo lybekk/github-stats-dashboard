@@ -1,0 +1,29 @@
+<div class="card-body">
+  <h5 class="card-title">
+    {{ reponame }}
+    <span class="badge badge-pill badge-light" *ngIf="!showChart">No traffic</span>
+    <button (click)="getTraffic(reponame)" class="btn btn-outline-secondary refetch-btn" [innerHTML]="refreshIcon"></button>
+  </h5>
+  <p class="card-text" *ngIf="showChart">
+    Total views {{ totalViews }}
+    Unique visitors {{ totalUniques }}
+  </p>
+</div>
+<div class="flex" class="card-img-bottom">
+  <div class="flex-item">
+    <div style="display: block;">
+      <canvas baseChart width="400" height="200"
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                (chartHover)="chartHovered($event)"
+                (chartClick)="chartClicked($event)"
+                *ngIf="showChart"
+      >
+      </canvas>
+    </div>
+  </div>
+</div>

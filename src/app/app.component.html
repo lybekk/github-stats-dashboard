@@ -1,0 +1,62 @@
+<div class="jumbotron jumbotron-fluid bg-transparent">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-auto">
+        <h1 class="display-4">{{ title }}
+          <small class="text-muted">Dashboard</small>
+        </h1>
+        <p class="lead">Quickly get an overview of your repo's traffic</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="jumbotron bg-dark">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="form-row align-items-center">
+        <div class="col-auto">
+          <form [formGroup]="myGroup">
+            <div class="form-group">
+              <label class="lead text-light">Personal access token</label>
+              <input 
+                type="text" 
+                class="form-control bg-dark text-light" 
+                formControlName="apiToken"
+                placeholder="personal access token" 
+                aria-label="personal access token" 
+                aria-describedby="basic-addon1"
+              >
+            </div>
+          </form>
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary btn-lg" (click)="fetchData()">Fetch</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-md-auto align-self-center" *ngIf="errorMessage">
+      <div class="alert alert-danger" role="alert">
+        Authorization failed
+      </div>
+    </div>
+  </div>
+</div>
+<app-repositories [datafetchedwhen]="dataFetchedWhen"></app-repositories>
+<hr>
+<div class="container">
+  <p class="lead">
+    Angular-based tool for viewing all your GitHub repository traffic.
+    Tool is executed client-side. In other words, your API Token is between you, your browser and GitHub.
+  </p>
+  <p>
+    <small class="text-muted"><mark>Organizations</mark> are not supported yet.</small>
+  </p>
+</div>
+
+<router-outlet></router-outlet>

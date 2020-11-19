@@ -1,0 +1,26 @@
+<div class="container" *ngIf="repositories.length">
+    <div class="row">
+        <div class="col">
+            <h1>
+                {{ title }}
+                <small class="text-muted">{{ repositories.length }}</small>
+            </h1>
+        </div>
+        <div class="col">
+            <div *ngIf="cachedData">
+                <ngb-alert type="info">
+                    Displaying cached data 
+                    <small *ngIf="datafetchedwhen"><samp>{{ datafetchedwhen }}</samp></small>
+                </ngb-alert>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row row-cols-1 row-cols-md-2">
+        <div class="col mb-4" *ngFor="let repository of repositories">
+            <div class="card">
+                <app-traffic [reponame]="repository.name"></app-traffic>
+            </div>
+        </div>
+    </div>
+</div>

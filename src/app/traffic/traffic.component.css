@@ -1,0 +1,13 @@
+.refetch-btn {
+    position: absolute;
+    right: 1vw;
+}
+
+.card-body .refetch-btn{
+    opacity: 0;
+    transition: all .4s;
+}
+
+.card-body:hover .refetch-btn {
+    opacity: 1;
+}
