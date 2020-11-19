@@ -20,11 +20,21 @@ export class TrafficComponent implements OnInit {
   constructor(private trafficService: TrafficService) {}
 
   ngOnInit(): void {
-    const cache = JSON.parse(
-      localStorage.getItem(`cachedRepoTraffic_${this.reponame}`)
-    )
-    if (cache) {
-      this.populateDataContainers(cache)
+    this.startupCheck()
+  }
+
+  async startupCheck() {
+    const lastFetched = localStorage.getItem('dataFetchedWhen').slice(0,10)
+    const dateToday = new Date().toISOString().slice(0,10)
+    if (lastFetched != dateToday) {
+      this.getTraffic(this.reponame)
+    } else {
+      const cache = JSON.parse(
+        localStorage.getItem(`cachedRepoTraffic_${this.reponame}`)
+      )
+      if (cache) {
+        this.populateDataContainers(cache)
+      }
     }
   }
 
@@ -37,6 +47,11 @@ export class TrafficComponent implements OnInit {
       this.totalViews = traffic.count
       this.totalUniques = traffic.uniques
       this.showChart = traffic.count ? true : false
+
+      this.lineChartLabels = []
+      this.lineChartData[0].data = []
+      this.lineChartData[1].data = []
+
       traffic.views.forEach(element => {
         this.lineChartLabels.push(
           new Date(element.timestamp).toLocaleDateString()
@@ -49,8 +64,9 @@ export class TrafficComponent implements OnInit {
     }
   }
 
-  getTraffic(reponame: string): void {
-    this.trafficService.getTraffic(reponame)
+  async getTraffic(reponame: string): Promise<void> {
+    const data = await this.trafficService.getTraffic(reponame)
+    this.populateDataContainers(data)
   }
 
   public lineChartData: ChartDataSets[] = [

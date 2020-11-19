@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
+import { RepositoriesService } from './repositories.service';
 
 @Component({
   selector: 'app-root',
@@ -12,14 +13,11 @@ export class AppComponent {
   dataFetchedWhen = null
   errorMessage = null
 
-  setDataFetchedWhen(newDate: boolean = false) {
-    if (newDate) {
-      localStorage.setItem('dataFetchedWhen', new Date().toISOString())
-    }
+  setDataFetchedWhen() {
     this.dataFetchedWhen = new Date(localStorage.getItem('dataFetchedWhen')).toLocaleString() || ''
   }
 
-  constructor() {}
+  constructor(private repositoriesService: RepositoriesService) {}
 
   ngOnInit() {
     let apiTokenSaved = localStorage.getItem('apiToken') || ''
@@ -31,55 +29,10 @@ export class AppComponent {
 
   async fetchData() {
     const token = this.myGroup.value.apiToken;
-    try {
-      localStorage.setItem('apiToken', token)
-    
-      const responseGraphQL = await fetch('https://api.github.com/graphql', {
-        method: 'POST',
-        headers: {
-          Authorization: `bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: `
-          {
-            viewer {
-              login
-              repositories(first: 100) {
-                nodes {
-                  name
-                  releases(first: 10) {
-                    nodes {
-                      releaseAssets(first: 100) {
-                        nodes {
-                          downloadCount
-                          name
-                        }
-                      }
-                    }
-                  }
-                  owner {
-                    login
-                  }
-                }
-                totalDiskUsage
-                totalCount
-              }
-            }
-          }        
-        ` }),
-      })
-      if (responseGraphQL.ok) {
-        const data = await responseGraphQL.json();
-        localStorage.setItem('cachedRepositories', JSON.stringify(data))
-        localStorage.setItem('owner', data.data.viewer.login)
-        this.setDataFetchedWhen(true)
-      } else {
-        this.errorMessage = responseGraphQL.statusText
-      }
-    } catch (error) {
-      console.log('Error when fetching repositories: ' ,error)
-      this.errorMessage = error
-    }
+    localStorage.setItem('apiToken', token)
+    const result = await this.repositoriesService.fetchRepositories()
+    this.setDataFetchedWhen()
+    this.errorMessage = result
   }
 }
 
