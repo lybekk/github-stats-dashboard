@@ -1,12 +1,26 @@
 <div class="card-body">
   <h5 class="card-title">
-    {{ reponame }}
-    <span class="badge badge-pill badge-light" *ngIf="!showChart">No traffic</span>
-    <button (click)="getTraffic(reponame)" class="btn btn-outline-secondary refetch-btn" [innerHTML]="refreshIcon"></button>
+    <span class="lead">
+      {{ reponame }}
+    </span>
+    <div class="quickStats">
+      <span class="badge badge-light">
+        <span class="starCount" *ngIf="repo.stargazerCount">
+          {{ repo.stargazerCount }}
+        </span>
+      </span>
+      <span class="badge badge-light">
+        <span class="watcherCount" *ngIf="repo.watchers.totalCount">
+          {{ repo.watchers.totalCount }}
+        </span>
+      </span>
+    </div>
   </h5>
   <p class="card-text" *ngIf="showChart">
-    Total views {{ totalViews }}
-    Unique visitors {{ totalUniques }}
+    <i>Views </i>
+    <b>{{ totalViews }} </b>
+    <i>Unique visitors </i>
+    <b>{{ totalUniques }}</b>
   </p>
 </div>
 <div class="flex" class="card-img-bottom">

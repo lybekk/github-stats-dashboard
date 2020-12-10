@@ -5,12 +5,12 @@
         <h1 class="display-4">{{ title }}
           <small class="text-muted">Dashboard</small>
         </h1>
-        <p class="lead">Quickly get an overview of your repo's traffic</p>
+        <p class="lead no-print">Quickly get an overview of your repos</p>
       </div>
     </div>
   </div>
 </div>
-<div class="jumbotron bg-dark">
+<div class="jumbotron bg-dark no-print">
   <div class="container">
     <div class="row justify-content-center">
       <div class="form-row align-items-center">
@@ -19,10 +19,10 @@
             <div class="form-group">
               <label class="lead text-light">Personal access token</label>
               <input 
-                type="text" 
+                type="password"
                 class="form-control bg-dark text-light" 
                 formControlName="apiToken"
-                placeholder="personal access token" 
+                placeholder="..." 
                 aria-label="personal access token" 
                 aria-describedby="basic-addon1"
               >
@@ -30,7 +30,11 @@
           </form>
         </div>
         <div class="col-auto">
-          <button type="submit" class="btn btn-primary btn-lg" (click)="fetchData()">Fetch</button>
+          <button type="submit" class="btn btn-primary btn-lg fetchButton" (click)="fetchData()" [ngClass]="{fetchDisabled: fetchBtnDisabled}">
+            Fetch
+          </button>
+          <div class="bg-dark text-secondary fetchCallToAction" [ngClass]="{fetchDisabled: fetchBtnDisabled}" [innerHTML]="fetchClickToActionIcon">
+          </div>
         </div>
       </div>
     </div>
@@ -49,14 +53,30 @@
 </div>
 <app-repositories [datafetchedwhen]="dataFetchedWhen"></app-repositories>
 <hr>
-<div class="container">
+<div class="container no-print">
   <p class="lead">
-    Angular-based tool for viewing all your GitHub repository traffic.
-    Tool is executed client-side. In other words, your API Token is between you, your browser and GitHub.
-  </p>
-  <p>
+    This, a tool for viewing all your GitHub repository traffic.
+    Everything is stored and executed client-side. In other words, your API Token is kept between you, your browser and GitHub.
+    <small>
+      Made in Angular.
+    </small>
+    <br>
     <small class="text-muted"><mark>Organizations</mark> are not supported yet.</small>
+    <br>
+    <small class="text-muted"><mark>Tip!</mark>This report is printable <kbd>CTRL+P</kbd>. Nonrelevant items will be omitted from the output</small>
   </p>
+  <div class="alert alert-light" role="alert">
+    <a href="https://github.com/lybekk/github-stats-dashboard" class="text-info" role="button" target="_blank">
+      Download, build and host it yourself
+      <span class="badge badge-secondary">Source code</span>
+    </a>
+  </div>
+</div>
+
+<div id="busyIndicator" *ngIf="busyIndicator">
+  <div class="spinner-grow text-info" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
 
 <router-outlet></router-outlet>

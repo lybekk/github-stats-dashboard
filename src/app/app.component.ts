@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { RepositoriesService } from './repositories.service';
+import { DatabaseService } from './database.service';
 
 @Component({
   selector: 'app-root',
@@ -12,13 +12,22 @@ export class AppComponent {
   myGroup: FormGroup;
   dataFetchedWhen = null
   errorMessage = null
+  fetchClickToActionIcon = '&#129299;';
 
   setDataFetchedWhen() {
     this.dataFetchedWhen = new Date(localStorage.getItem('dataFetchedWhen')).toLocaleString() || ''
   }
 
-  constructor(private repositoriesService: RepositoriesService) {}
+  get fetchBtnDisabled() {
+    return this.myGroup.value.apiToken.length < 4
+  }
 
+  get busyIndicator() {
+    return this.databaseService.busyIndicator
+  }
+
+  constructor(private databaseService: DatabaseService) {}
+  
   ngOnInit() {
     let apiTokenSaved = localStorage.getItem('apiToken') || ''
     this.myGroup = new FormGroup({
@@ -30,7 +39,7 @@ export class AppComponent {
   async fetchData() {
     const token = this.myGroup.value.apiToken;
     localStorage.setItem('apiToken', token)
-    const result = await this.repositoriesService.fetchRepositories()
+    const result = await this.databaseService.fetchRepositories()
     this.setDataFetchedWhen()
     this.errorMessage = result
   }

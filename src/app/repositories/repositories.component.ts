@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Repository } from '../repository'
+import { DatabaseService } from '../database.service';
 
 @Component({
   selector: 'app-repositories',
@@ -10,17 +10,40 @@ export class RepositoriesComponent implements OnInit {
   @Input() datafetchedwhen: string;
 
   title = 'Repositories';
-  repositories: Repository[] = []
-  cachedData = false
+  totalWatchers = 0;
+  totalStars = 0;
 
-  constructor() {}
+  constructor(private databaseService: DatabaseService) {}
 
   ngOnInit(): void {
-    const cachedRepositories = JSON.parse(localStorage.getItem('cachedRepositories'))
-    const data = cachedRepositories?.data
-    if (data) {
-      this.repositories = cachedRepositories.data.viewer.repositories.nodes
-      this.cachedData = true
+    this.totalWatchers = this.databaseService.repositories.reduce(
+      (accumulator, repo) => accumulator + repo.watchers.totalCount, 0);
+
+      this.totalStars = this.databaseService.repositories.reduce(
+        (accumulator, repo) => accumulator + repo.stargazerCount, 0);
+  }
+
+  get repositories() {
+    try {
+      return this.databaseService.repositories
+    } catch (error) {
+      return []
+    }
+  }
+
+  get repositoriesWithTraffic() {
+    try {
+      return this.databaseService.repositories.filter(repo => repo.traffic.count)
+    } catch (error) {
+      return []
+    }
+  }
+
+  get repositoriesNoTraffic() {
+    try {
+      return this.databaseService.repositories.filter(repo => repo.traffic.count === 0)
+    } catch (error) {
+      return []
     }
   }
 }

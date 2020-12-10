@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { TrafficService } from '../traffic.service';
 import { Traffic } from '../traffic'
+import { Repository } from '../repository'
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, BaseChartDirective, Label } from 'ng2-charts';
 
@@ -10,38 +10,24 @@ import { Color, BaseChartDirective, Label } from 'ng2-charts';
   styleUrls: ['./traffic.component.css']
 })
 export class TrafficComponent implements OnInit {
-  @Input() reponame: string;
+  @Input() repo: Repository;
 
   totalViews = 0;
   totalUniques = 0;
   showChart = false;
+  owner = null;
+  reponame = null;
+
   refreshIcon = '&#8635;';
 
-  constructor(private trafficService: TrafficService) {}
+  constructor() {}
 
   ngOnInit(): void {
-    this.startupCheck()
+   this.owner = this.repo.owner.login;
+   this.reponame = this.repo.name;
+   this.populateDataContainers(this.repo.traffic)
   }
 
-  async startupCheck() {
-    const lastFetched = localStorage.getItem('dataFetchedWhen').slice(0,10)
-    const dateToday = new Date().toISOString().slice(0,10)
-    if (lastFetched != dateToday) {
-      this.getTraffic(this.reponame)
-    } else {
-      const cache = JSON.parse(
-        localStorage.getItem(`cachedRepoTraffic_${this.reponame}`)
-      )
-      if (cache) {
-        this.populateDataContainers(cache)
-      }
-    }
-  }
-
-  /**
-   * TODO: fill in docstring
-   * @param traffic - GitHub REST API Traffic view counts
-   */
   populateDataContainers(traffic: Traffic): void {
     try {
       this.totalViews = traffic.count
@@ -60,20 +46,17 @@ export class TrafficComponent implements OnInit {
         this.lineChartData[1].data.push(element.uniques)
       });
     } catch (error) {
-      console.log(`Error fetching ${this.reponame}: ` ,error)
+      console.log(`Error fetching ${this.repo.name}: ` ,error)
     }
-  }
-
-  async getTraffic(reponame: string): Promise<void> {
-    const data = await this.trafficService.getTraffic(reponame)
-    this.populateDataContainers(data)
   }
 
   public lineChartData: ChartDataSets[] = [
     { data: [], label: 'Total' },
     { data: [], label: 'Uniques' },
   ];
+
   public lineChartLabels: Label[] = [];
+
   public lineChartOptions: (ChartOptions & { annotation: any }) = {
     responsive: true,
     scales: {
@@ -93,25 +76,22 @@ export class TrafficComponent implements OnInit {
           gridLines: {
             color: 'transparent',
           },
-          ticks: {
-            stepSize: 1,
-          }
         },
       ]
     },
     annotation: {},
   };
   public lineChartColors: Color[] = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
+    { // SteelBlue
+      backgroundColor: '#4682b4',
       borderColor: 'rgba(148,159,177,1)',
       pointBackgroundColor: 'rgba(148,159,177,1)',
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
       pointHoverBorderColor: 'rgba(148,159,177,0.8)'
     },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
+    { // Teal
+      backgroundColor: '#2f4f4f',
       borderColor: 'rgba(77,83,96,1)',
       pointBackgroundColor: 'rgba(77,83,96,1)',
       pointBorderColor: '#fff',
@@ -129,8 +109,13 @@ export class TrafficComponent implements OnInit {
     console.log(event, active);
   }
 
+
+  /**
+   * TODO: For reference later
+   * @param param0 
+   */
   public chartHovered({ event, active }: { event: MouseEvent, active: {}[] }): void {
-    console.log(event, active);
+    return
   }
 
   public hideOne(): void {

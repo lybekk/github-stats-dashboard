@@ -3,6 +3,10 @@
     right: 1vw;
 }
 
+.card-title {
+    border-bottom: 1px solid #e4e4e4;
+}
+
 .card-body .refetch-btn{
     opacity: 0;
     transition: all .4s;
@@ -10,4 +14,25 @@
 
 .card-body:hover .refetch-btn {
     opacity: 1;
+}
+
+.quickStats {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+}
+
+.quickStats > .badge {
+    margin: .2rem;
+}
+
+.starCount::after {
+    content: "\2605";
+    color: goldenrod;
+}
+
+.watcherCount::after {
+    content: "\1F440";
+    color: goldenrod;
 }
