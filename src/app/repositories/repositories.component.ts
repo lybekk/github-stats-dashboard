@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DatabaseService } from '../database.service';
+import { Repository } from '../repository';
 
 @Component({
   selector: 'app-repositories',
@@ -46,4 +47,44 @@ export class RepositoriesComponent implements OnInit {
       return []
     }
   }
+
+  get totalRepository() {
+    try {
+      const totalRepo = {
+        id: 0,
+        name: "All repositories",
+        owner: {
+          login: ""
+        },
+        traffic: {
+          count: 0,
+          uniques: 0,
+          views: []
+        },
+        stargazerCount: 0,
+        watchers: {
+          totalCount: 0
+        }
+      } 
+      this.databaseService.repositories.filter(repo => repo.traffic.count).forEach(repo => {
+        totalRepo.stargazerCount += repo.stargazerCount
+        totalRepo.watchers.totalCount += repo.watchers.totalCount
+        totalRepo.traffic.count += repo.traffic.count
+        totalRepo.traffic.uniques += repo.traffic.uniques
+        repo.traffic.views.forEach(view => {
+          let index = totalRepo.traffic.views.findIndex(element => element.timestamp === view.timestamp)
+          if (index < 0) {
+            index = totalRepo.traffic.views.push({timestamp: view.timestamp, count: 0, uniques: 0}) - 1
+          }
+          totalRepo.traffic.views[index].count += view.count;
+          totalRepo.traffic.views[index].uniques += view.uniques;
+        })
+      })
+      totalRepo.traffic.views.sort((a, b) => <any>new Date(a.timestamp) - <any>new Date(b.timestamp))
+      return totalRepo
+    } catch (error) {
+      return 
+    }
+  }
+
 }
