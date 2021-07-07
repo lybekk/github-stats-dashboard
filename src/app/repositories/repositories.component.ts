@@ -1,6 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DatabaseService } from '../database.service';
-import { Repository } from '../repository';
 
 @Component({
   selector: 'app-repositories',
