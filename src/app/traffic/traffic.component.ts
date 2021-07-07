@@ -76,6 +76,12 @@ export class TrafficComponent implements OnInit {
           gridLines: {
             color: 'transparent',
           },
+          ticks: {
+            autoSkip: true,
+            autoSkipPadding: 50,
+            beginAtZero: true,
+            stepSize: 1
+          }
         },
       ]
     },
