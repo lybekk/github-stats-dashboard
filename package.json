@@ -8,7 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "deploy": "ng deploy"
+    "deploy": "ng build --prod --base-href /github-stats-dashboard/ && npx angular-cli-ghpages --dir=dist/gh-stats"
   },
   "private": true,
   "dependencies": {
